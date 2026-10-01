@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Instrument Sans', system-ui, sans-serif;
+  --font-sans: 'Manrope', system-ui, sans-serif;
+  --color-ink: #fafafa;
+  --color-panel: #ffffff;
+  --color-panel-2: #f4f4f5;
+  --color-line: #e6e6ea;
+  --color-volt: #6d28d9;
+  --color-volt-hi: #5b21b6;
+  --color-mute: #71717a;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: #18181b;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-volt);
+  color: #fff;
+}
+
+* {
+  scrollbar-width: none;
+}
