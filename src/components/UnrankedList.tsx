@@ -1,16 +1,17 @@
 import { useState } from 'react'
-import type { Armwrestler } from '../hooks/useArmwrestlers'
+import type { ClubMember } from '../hooks/useArmwrestlers'
 import AdminControls from './AdminControls'
 
 interface Props {
-  rows: Armwrestler[]
+  rows: ClubMember[]
   admin: boolean
   onRank: (id: string) => void
-  onEdit: (a: Armwrestler) => void
-  onDelete: (a: Armwrestler) => void
+  onEdit: (a: ClubMember) => void
+  onDelete: (a: ClubMember) => void
+  onRemoveFromClub?: (a: ClubMember) => void
 }
 
-export default function UnrankedList({ rows, admin, onRank, onEdit, onDelete }: Props) {
+export default function UnrankedList({ rows, admin, onRank, onEdit, onDelete, onRemoveFromClub }: Props) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -37,7 +38,7 @@ export default function UnrankedList({ rows, admin, onRank, onEdit, onDelete }: 
 
       {open && (
         <ul className="space-y-2 px-4 pb-4">
-          {rows.length === 0 && <li className="px-2 py-4 text-center text-mute">Todos están clasificados en este brazo.</li>}
+          {rows.length === 0 && <li className="px-2 py-4 text-center text-mute">No hay Unrankeds en este brazo.</li>}
           {rows.map((a) => (
             <li
               key={a.id}
@@ -55,6 +56,7 @@ export default function UnrankedList({ rows, admin, onRank, onEdit, onDelete }: 
                   onToggleRank={() => onRank(a.id)}
                   onEdit={() => onEdit(a)}
                   onDelete={() => onDelete(a)}
+                  onRemoveFromClub={onRemoveFromClub ? () => onRemoveFromClub(a) : undefined}
                 />
               )}
             </li>

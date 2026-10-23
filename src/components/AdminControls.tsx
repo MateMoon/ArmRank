@@ -7,6 +7,7 @@ interface Props {
   ranked: boolean
   onEdit: () => void
   onDelete: () => void
+  onRemoveFromClub?: () => void
 }
 
 function IconBtn({
@@ -39,7 +40,7 @@ function IconBtn({
   )
 }
 
-export default function AdminControls({ canUp, canDown, onUp, onDown, onToggleRank, ranked, onEdit, onDelete }: Props) {
+export default function AdminControls({ canUp, canDown, onUp, onDown, onToggleRank, ranked, onEdit, onDelete, onRemoveFromClub }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {ranked && (
@@ -65,6 +66,11 @@ export default function AdminControls({ canUp, canDown, onUp, onDown, onToggleRa
       <IconBtn label="Eliminar" onClick={onDelete} danger>
         <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" />
       </IconBtn>
+      {onRemoveFromClub && (
+        <button onClick={onRemoveFromClub} className="h-9 rounded-lg border border-line bg-panel-2 px-3 text-xs font-semibold transition hover:border-red-400 hover:text-red-600">
+          Quitar del club
+        </button>
+      )}
     </div>
   )
 }

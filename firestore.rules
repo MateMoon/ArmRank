@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'PEGA_AQUI_EL_UID_DEL_ADMIN';
+    }
+
+    function validName(data) {
+      return data.keys().hasOnly(['name'])
+        && data.keys().hasAll(['name'])
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 60;
+    }
+
+    function validMember(data) {
+      return data.keys().hasOnly(['rankLeft', 'rankRight'])
+        && data.keys().hasAll(['rankLeft', 'rankRight'])
+        && (data.rankLeft == null || data.rankLeft is int)
+        && (data.rankRight == null || data.rankRight is int);
+    }
+
+    match /armwrestlers/{armwrestlerId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && validName(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /clubs/{clubId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && validName(request.resource.data);
+      allow delete: if isAdmin() && clubId != 'general';
+
+      match /members/{armwrestlerId} {
+        allow read: if true;
+        allow create, update: if isAdmin() && validMember(request.resource.data);
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}
