@@ -7,13 +7,14 @@ interface Props {
   totalRanked: number
   admin: boolean
   onMove: (id: string, dir: 'up' | 'down') => void
+  onSetPosition: (id: string, position: number) => void
   onUnrank: (id: string) => void
   onEdit: (a: ClubMember) => void
   onDelete: (a: ClubMember) => void
   onRemoveFromClub?: (a: ClubMember) => void
 }
 
-export default function RankingTable({ arm, rows, totalRanked, admin, onMove, onUnrank, onEdit, onDelete, onRemoveFromClub }: Props) {
+export default function RankingTable({ arm, rows, totalRanked, admin, onMove, onSetPosition, onUnrank, onEdit, onDelete, onRemoveFromClub }: Props) {
   const k = arm === 'left' ? 'rankLeft' : 'rankRight'
 
   return (
@@ -57,6 +58,9 @@ export default function RankingTable({ arm, rows, totalRanked, admin, onMove, on
                       canDown={pos < totalRanked}
                       onUp={() => onMove(a.id, 'up')}
                       onDown={() => onMove(a.id, 'down')}
+                      position={pos}
+                      maxPosition={totalRanked}
+                      onSetPosition={(position) => onSetPosition(a.id, position)}
                       onToggleRank={() => onUnrank(a.id)}
                       onEdit={() => onEdit(a)}
                       onDelete={() => onDelete(a)}

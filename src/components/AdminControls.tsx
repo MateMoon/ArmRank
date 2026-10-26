@@ -1,8 +1,13 @@
+import { useEffect, useState } from 'react'
+
 interface Props {
   canUp?: boolean
   canDown?: boolean
   onUp?: () => void
   onDown?: () => void
+  position?: number
+  maxPosition?: number
+  onSetPosition?: (position: number) => void
   onToggleRank: () => void
   ranked: boolean
   onEdit: () => void
@@ -40,7 +45,9 @@ function IconBtn({
   )
 }
 
-export default function AdminControls({ canUp, canDown, onUp, onDown, onToggleRank, ranked, onEdit, onDelete, onRemoveFromClub }: Props) {
+export default function AdminControls({ canUp, canDown, onUp, onDown, position, maxPosition, onSetPosition, onToggleRank, ranked, onEdit, onDelete, onRemoveFromClub }: Props) {
+  const [newPosition, setNewPosition] = useState(position ?? 1)
+  useEffect(() => setNewPosition(position ?? 1), [position])
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {ranked && (
@@ -51,6 +58,11 @@ export default function AdminControls({ canUp, canDown, onUp, onDown, onToggleRa
           <IconBtn label="Bajar" onClick={onDown} disabled={!canDown}>
             <path d="m6 9 6 6 6-6" />
           </IconBtn>
+          <form className="flex h-9 items-center gap-1" onSubmit={(event) => { event.preventDefault(); if (newPosition >= 1 && newPosition <= (maxPosition ?? 1)) onSetPosition?.(newPosition) }}>
+            <label className="sr-only" htmlFor={`position-${position}`}>Nueva posición</label>
+            <input id={`position-${position}`} aria-label="Nueva posición" type="number" min={1} max={maxPosition} value={newPosition} onChange={(event) => setNewPosition(Number(event.target.value))} className="h-9 w-16 rounded-lg border border-line bg-panel px-2 text-sm" />
+            <button type="submit" className="h-9 rounded-lg border border-line bg-panel-2 px-2 text-xs font-semibold transition hover:border-volt hover:text-volt-hi">Ir</button>
+          </form>
         </>
       )}
       <button
