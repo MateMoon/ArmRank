@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
-import { collectionGroup, onSnapshot } from 'firebase/firestore'
+import { collection, onSnapshot } from 'firebase/firestore'
 import { auth, db } from './firebase'
 import { GENERAL_CLUB_ID, type Arm, type Armwrestler, type ClubMember } from './hooks/useArmwrestlers'
 import { useArmwrestlers } from './hooks/useArmwrestlers'
@@ -28,11 +28,14 @@ export default function App() {
   const [deleting, setDeleting] = useState<Armwrestler | null>(null)
 
   useEffect(() => onAuthStateChanged(auth, (user) => setAdmin(user !== null)), [])
-  useEffect(() => onSnapshot(collectionGroup(db, 'members'), (snap) => {
-    const next: Record<string, number> = {}
-    snap.docs.forEach((d) => { const id = d.ref.parent.parent?.id; if (id) next[id] = (next[id] ?? 0) + 1 })
-    setCounts(next)
-  }, (e) => console.error(e)), [])
+  useEffect(() => {
+    const unsubscribers = clubData.clubs.map((club) => onSnapshot(
+      collection(db, 'clubs', club.id, 'members'),
+      (snap) => setCounts((current) => ({ ...current, [club.id]: snap.size })),
+      (error) => console.error(`No se pudo contar miembros de ${club.name}:`, error),
+    ))
+    return () => unsubscribers.forEach((unsubscribe) => unsubscribe())
+  }, [clubData.clubs])
 
   const login = async (email: string, password: string) => {
     try { await signInWithEmailAndPassword(auth, email, password); setViewLogin(false); return true } catch { return false }

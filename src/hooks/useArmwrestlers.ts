@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { collection, collectionGroup, doc, getDocs, onSnapshot, writeBatch } from 'firebase/firestore'
+import { collection, doc, getDocs, onSnapshot, writeBatch } from 'firebase/firestore'
 import { db } from '../firebase'
 
 export type Arm = 'left' | 'right'
@@ -47,6 +47,7 @@ export function useArmwrestlers() {
 }
 
 async function getMemberDocsForAthlete(id: string) {
-  const snap = await getDocs(collectionGroup(db, 'members'))
-  return snap.docs.filter((d) => d.id === id).map((d) => d.ref)
+  const clubs = await getDocs(collection(db, 'clubs'))
+  const memberCollections = await Promise.all(clubs.docs.map((club) => getDocs(collection(db, 'clubs', club.id, 'members'))))
+  return memberCollections.flatMap((members) => members.docs.filter((member) => member.id === id).map((member) => member.ref))
 }
